@@ -196,6 +196,150 @@ export async function updateProjectReview(input: {
   });
 }
 
+export async function listEvents() {
+  await ensureBootstrapData();
+
+  const events = await prisma.event.findMany({
+    orderBy: [{ startDate: "asc" }, { name: "asc" }],
+    include: {
+      _count: {
+        select: {
+          projects: true,
+          participants: { where: { role: UserRole.JUDGE } },
+          inviteCodes: true,
+        },
+      },
+    },
+  });
+
+  return events.map((event) => ({
+    ...formatEventForForm(event),
+    projectCount: event._count.projects,
+    judgeCount: event._count.participants,
+    inviteCount: event._count.inviteCodes,
+  }));
+}
+
+export async function getEventSummary(eventId: string) {
+  await ensureBootstrapData();
+
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+    include: {
+      _count: {
+        select: {
+          projects: true,
+          participants: { where: { role: UserRole.JUDGE } },
+          inviteCodes: true,
+        },
+      },
+    },
+  });
+
+  if (!event) return null;
+
+  const submittedScorecards = await prisma.scorecard.count({
+    where: {
+      project: { eventId },
+      status: "SUBMITTED",
+    },
+  });
+
+  return {
+    ...formatEventForForm(event),
+    projectCount: event._count.projects,
+    judgeCount: event._count.participants,
+    inviteCount: event._count.inviteCodes,
+    submittedScorecards,
+  };
+}
+
+export async function getEventConfig(eventId: string) {
+  await ensureBootstrapData();
+
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+  if (!event) return null;
+
+  return formatEventForForm(event);
+}
+
+export async function getEventInvites(eventId: string) {
+  const invites = await prisma.inviteCode.findMany({
+    where: { eventId },
+    orderBy: [{ status: "asc" }, { email: "asc" }],
+  });
+
+  return invites.map((invite) => ({
+    id: invite.id,
+    email: invite.email,
+    label: invite.label,
+    track: invite.track,
+    status: invite.status,
+    redeemedAt: invite.redeemedAt,
+  }));
+}
+
+export async function getEventJudges(eventId: string) {
+  const [judges, projects] = await Promise.all([
+    prisma.eventParticipant.findMany({
+      where: { eventId, role: UserRole.JUDGE },
+      include: { user: true },
+      orderBy: { user: { name: "asc" } },
+    }),
+    prisma.project.findMany({
+      where: { eventId },
+      include: { assignments: true },
+    }),
+  ]);
+
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+
+  return {
+    judges: judges.map((participant) => ({
+      id: participant.userId,
+      name: participant.user.name,
+      email: participant.user.email,
+      track: participant.track,
+      assignmentCapacity: participant.assignmentCapacity ?? 5,
+      assignmentCount: projects.filter((project) =>
+        project.assignments.some((a) => a.judgeUserId === participant.userId),
+      ).length,
+    })),
+    assignmentPolicy: normalizeAssignmentPolicy(
+      event?.assignmentPolicy as object | null,
+    ),
+  };
+}
+
+export async function getEventProjects(eventId: string) {
+  const projects = await prisma.project.findMany({
+    where: { eventId },
+    include: {
+      links: true,
+      assignments: { include: { judgeUser: true } },
+      scorecards: true,
+    },
+    orderBy: [{ screeningScore: "desc" }, { projectName: "asc" }],
+  });
+
+  return projects.map((project) => ({
+    id: project.id,
+    projectName: project.projectName,
+    teamName: project.teamName,
+    track: project.track,
+    status: project.status,
+    description: project.description,
+    screeningScore: project.screeningScore,
+    manualAdjustment: project.manualAdjustment,
+    tieBreakerNote: project.tieBreakerNote,
+    repoUrl: project.links.find((link) => link.type === "REPO")?.url ?? "",
+    demoUrl: project.links.find((link) => link.type === "DEMO")?.url ?? "",
+    submissionUrl: project.links.find((link) => link.type === "SUBMISSION")?.url ?? "",
+    assignedJudges: project.assignments.map((a) => a.judgeUser.name),
+    submittedScorecards: project.scorecards.filter((s) => s.status === "SUBMITTED").length,
+  }));
+}
+
 export async function getAdminDashboardData(selectedEventId?: string) {
   await ensureBootstrapData();
 

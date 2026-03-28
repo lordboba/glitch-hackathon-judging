@@ -14,11 +14,6 @@ import {
 } from "@/lib/server/events";
 import { publishLeaderboard } from "@/lib/server/leaderboard";
 
-function adminRedirect(eventId: string, extra?: Record<string, string>) {
-  const params = new URLSearchParams({ eventId, ...extra });
-  redirect(`/admin?${params.toString()}`);
-}
-
 export async function createEventAction(formData: FormData) {
   await requireSessionUser("admin");
 
@@ -36,7 +31,7 @@ export async function createEventAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
-  adminRedirect(event.id);
+  redirect(`/admin/${event.id}`);
 }
 
 export async function updateEventAction(formData: FormData) {
@@ -60,8 +55,8 @@ export async function updateEventAction(formData: FormData) {
     judgeCount: Number(formData.get("judgeCount") || 0),
   });
 
-  revalidatePath("/admin");
-  adminRedirect(eventId, { saved: "event" });
+  revalidatePath(`/admin/${eventId}`);
+  redirect(`/admin/${eventId}/config?saved=event`);
 }
 
 export async function createInviteAction(formData: FormData) {
@@ -76,8 +71,8 @@ export async function createInviteAction(formData: FormData) {
     code: String(formData.get("code") || ""),
   });
 
-  revalidatePath("/admin");
-  adminRedirect(eventId, { inviteCode: code });
+  revalidatePath(`/admin/${eventId}`);
+  redirect(`/admin/${eventId}/invites?inviteCode=${encodeURIComponent(code)}`);
 }
 
 export async function revokeInviteAction(formData: FormData) {
@@ -87,8 +82,8 @@ export async function revokeInviteAction(formData: FormData) {
   const inviteId = String(formData.get("inviteId") || "");
 
   await revokeInvite(inviteId);
-  revalidatePath("/admin");
-  adminRedirect(eventId, { saved: "invite" });
+  revalidatePath(`/admin/${eventId}`);
+  redirect(`/admin/${eventId}/invites?saved=invite`);
 }
 
 export async function saveAssignmentPolicyAction(formData: FormData) {
@@ -103,8 +98,8 @@ export async function saveAssignmentPolicyAction(formData: FormData) {
     keepExistingAssignments: formData.get("keepExistingAssignments") === "on",
   });
 
-  revalidatePath("/admin");
-  adminRedirect(eventId, { saved: "assignments" });
+  revalidatePath(`/admin/${eventId}`);
+  redirect(`/admin/${eventId}/judges?saved=assignments`);
 }
 
 export async function updateProjectReviewAction(formData: FormData) {
@@ -118,8 +113,8 @@ export async function updateProjectReviewAction(formData: FormData) {
     tieBreakerNote: String(formData.get("tieBreakerNote") || ""),
   });
 
-  revalidatePath("/admin");
-  adminRedirect(eventId, { saved: "project" });
+  revalidatePath(`/admin/${eventId}`);
+  redirect(`/admin/${eventId}/rankings?saved=project`);
 }
 
 export async function finalizeLeaderboardAction(formData: FormData) {
@@ -127,6 +122,6 @@ export async function finalizeLeaderboardAction(formData: FormData) {
   const eventId = String(formData.get("eventId") || "");
 
   await publishLeaderboard(eventId, admin.id);
-  revalidatePath("/admin");
-  adminRedirect(eventId, { saved: "leaderboard" });
+  revalidatePath(`/admin/${eventId}`);
+  redirect(`/admin/${eventId}/publish?saved=leaderboard`);
 }
