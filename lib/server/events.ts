@@ -2,9 +2,14 @@ import { InviteCodeStatus, UserRole } from "@prisma/client";
 
 import { normalizeAssignmentPolicy } from "@/lib/server/assignments";
 import { ensureBootstrapData } from "@/lib/server/bootstrap";
-import { defaultEventConfig } from "@/lib/server/defaults";
 import { generateOpaqueToken, hashSecret, slugify } from "@/lib/server/crypto";
 import { prisma } from "@/lib/server/db";
+import {
+  eventSystemDefaults,
+  parseRequiredDate,
+  parseTrackList,
+  requireText,
+} from "@/lib/server/event-config";
 import { getPublishedLeaderboard, computeLiveLeaderboard } from "@/lib/server/leaderboard";
 
 function formatEventForForm(event: {
@@ -82,29 +87,30 @@ export async function createEvent(input: {
   tracks: string;
   organizerGoal: string;
 }) {
-  const name = input.name.trim();
+  const name = requireText(input.name, "Event name");
+  const hostOrganization = requireText(input.hostOrganization, "Host organization");
+  const timezone = requireText(input.timezone, "Timezone");
+  const location = requireText(input.location, "Location");
+  const tracks = parseTrackList(input.tracks);
 
-  if (!name) {
-    throw new Error("Event name is required");
+  if (!tracks.length) {
+    throw new Error("At least one track is required");
   }
 
   return prisma.event.create({
     data: {
-      ...defaultEventConfig,
+      ...eventSystemDefaults,
       name,
       slug: slugify(name),
-      hostOrganization: input.hostOrganization.trim() || defaultEventConfig.hostOrganization,
-      format: input.format || defaultEventConfig.format,
-      audience: input.audience || defaultEventConfig.audience,
-      timezone: input.timezone || defaultEventConfig.timezone,
-      startDate: new Date(input.startDate),
-      endDate: new Date(input.endDate),
-      location: input.location.trim() || defaultEventConfig.location,
-      tracks: input.tracks
-        .split(",")
-        .map((part) => part.trim())
-        .filter(Boolean),
-      organizerGoal: input.organizerGoal.trim() || defaultEventConfig.organizerGoal,
+      hostOrganization,
+      format: input.format || eventSystemDefaults.format,
+      audience: input.audience || eventSystemDefaults.audience,
+      timezone,
+      startDate: parseRequiredDate(input.startDate, "Start date"),
+      endDate: parseRequiredDate(input.endDate, "End date"),
+      location,
+      tracks,
+      organizerGoal: input.organizerGoal.trim(),
     },
   });
 }
@@ -124,25 +130,32 @@ export async function updateEvent(input: {
   organizerGoal: string;
   judgeCount: number;
 }) {
+  const name = requireText(input.name, "Event name");
+  const hostOrganization = requireText(input.hostOrganization, "Host organization");
+  const timezone = requireText(input.timezone, "Timezone");
+  const location = requireText(input.location, "Location");
+  const tracks = parseTrackList(input.tracks);
+
+  if (!tracks.length) {
+    throw new Error("At least one track is required");
+  }
+
   return prisma.event.update({
     where: { id: input.eventId },
     data: {
-      name: input.name.trim(),
-      slug: slugify(input.name),
-      hostOrganization: input.hostOrganization.trim(),
+      name,
+      slug: slugify(name),
+      hostOrganization,
       format: input.format,
       audience: input.audience,
       status: input.status as "DRAFT" | "OPEN_INTAKE" | "JUDGING_LIVE" | "COMPLETED",
-      timezone: input.timezone,
-      startDate: new Date(input.startDate),
-      endDate: new Date(input.endDate),
-      location: input.location.trim(),
-      tracks: input.tracks
-        .split(",")
-        .map((part) => part.trim())
-        .filter(Boolean),
+      timezone,
+      startDate: parseRequiredDate(input.startDate, "Start date"),
+      endDate: parseRequiredDate(input.endDate, "End date"),
+      location,
+      tracks,
       organizerGoal: input.organizerGoal.trim(),
-      judgeCount: Number(input.judgeCount),
+      judgeCount: Math.max(0, Number(input.judgeCount) || 0),
     },
   });
 }

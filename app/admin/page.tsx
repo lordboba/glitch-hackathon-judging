@@ -92,7 +92,7 @@ export default async function AdminPage() {
             </label>
             <label>
               <span>Host organization</span>
-              <input defaultValue="Signal Labs" name="hostOrganization" type="text" />
+              <input name="hostOrganization" placeholder="Your organization" required type="text" />
             </label>
             <label>
               <span>Format</span>
@@ -112,11 +112,11 @@ export default async function AdminPage() {
             </label>
             <label>
               <span>Timezone</span>
-              <input defaultValue="America/Los_Angeles" name="timezone" type="text" />
+              <input name="timezone" placeholder="America/Los_Angeles" required type="text" />
             </label>
             <label>
               <span>Location</span>
-              <input defaultValue="San Francisco, CA" name="location" type="text" />
+              <input name="location" placeholder="San Francisco, CA" required type="text" />
             </label>
             <label>
               <span>Start date</span>
@@ -129,7 +129,12 @@ export default async function AdminPage() {
           </div>
           <label>
             <span>Tracks</span>
-            <input defaultValue="Developer Tools, Climate, Healthcare" name="tracks" type="text" />
+            <input
+              name="tracks"
+              placeholder="Developer Tools, Climate, Healthcare"
+              required
+              type="text"
+            />
           </label>
           <label>
             <span>Organizer goal</span>
