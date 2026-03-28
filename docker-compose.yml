@@ -27,7 +27,7 @@ services:
       DATABASE_URL: postgresql://glitch:glitch@postgres:5432/glitch_graders?schema=public
       SESSION_SECRET: replace-this-before-production
       APP_URL: http://localhost:3000
-      ADMIN_AUTH_CODE: ORBIT-ADMIN-2026
+      ADMIN_AUTH_CODE: replace-this-before-production
     ports:
       - "3000:3000"
 

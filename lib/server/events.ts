@@ -2,7 +2,7 @@ import { InviteCodeStatus, UserRole } from "@prisma/client";
 
 import { normalizeAssignmentPolicy } from "@/lib/server/assignments";
 import { ensureBootstrapData } from "@/lib/server/bootstrap";
-import { defaultEventConfig, sampleJudges } from "@/lib/server/defaults";
+import { defaultEventConfig } from "@/lib/server/defaults";
 import { generateOpaqueToken, hashSecret, slugify } from "@/lib/server/crypto";
 import { prisma } from "@/lib/server/db";
 import { getPublishedLeaderboard, computeLiveLeaderboard } from "@/lib/server/leaderboard";
@@ -51,8 +51,6 @@ export async function listOpenJudgeInvites() {
     label: invite.label,
     track: invite.track,
     eventName: invite.event.name,
-    demoCode:
-      sampleJudges.find((sampleJudge) => sampleJudge.email === invite.email)?.code ?? "Stored hashed",
   }));
 }
 

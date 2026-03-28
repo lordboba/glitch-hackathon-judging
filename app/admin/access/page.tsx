@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { authorizeAdmin } from "@/app/actions";
-import { env } from "@/lib/server/env";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +33,6 @@ export default async function AdminAccessPage({
           The code is stored hashed in PostgreSQL, sessions are issued server-side, and only
           authenticated admins can reach the organizer area.
         </p>
-        <div className="info-block">
-          <span>Demo code</span>
-          <code>{env.adminAuthCode}</code>
-        </div>
         <Link className="text-link" href="/">
           &larr; Back to overview
         </Link>
@@ -58,7 +53,7 @@ export default async function AdminAccessPage({
           </label>
           <label>
             <span>Authorization code</span>
-            <input name="authorizationCode" placeholder="ORBIT-ADMIN-2026" required type="password" />
+            <input name="authorizationCode" placeholder="Enter your organizer code" required type="password" />
           </label>
           <button className="button button-primary button-full" type="submit">
             Unlock organizer workspace

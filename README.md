@@ -14,6 +14,12 @@ Single-app hackathon judging backend built on Next.js, Prisma, and PostgreSQL.
 - live leaderboard calculation plus explicit publish snapshots
 - Docker Compose stack for one app container and one Postgres container
 
+## Default posture
+
+- no demo event, judge, invite, or project data is seeded automatically
+- the app only provisions the admin access code from `ADMIN_AUTH_CODE`
+- admins create the first event and private judge invites through the UI
+
 ## Local development
 
 1. Install dependencies:
@@ -59,12 +65,6 @@ npm run db:migrate
 npm run db:deploy
 npm run db:seed
 ```
-
-## Demo access
-
-- Admin code: `ORBIT-ADMIN-2026`
-- Judge invite: `JUDGE-ORBIT-27`
-- Judge invite: `JUDGE-TERRA-08`
 
 ## Main routes
 

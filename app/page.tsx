@@ -65,18 +65,25 @@ export default async function HomePage() {
               </p>
             </article>
             <article className="feature-card">
-              <p className="eyebrow">Demo judge invites</p>
-              <div className="token-list">
-                {data.openInvites.map((invite) => (
-                  <div className="token-row" key={invite.id}>
-                    <div>
-                      <strong>{invite.label}</strong>
+              <p className="eyebrow">Invite-based access</p>
+              {data.openInvites.length > 0 ? (
+                <div className="token-list">
+                  {data.openInvites.map((invite) => (
+                    <div className="token-row" key={invite.id}>
+                      <div>
+                        <strong>{invite.label}</strong>
+                        <span>{invite.eventName}</span>
+                      </div>
                       <span>{invite.email}</span>
                     </div>
-                    <code>{invite.demoCode}</code>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="lede">
+                  Judge access is invite-only. Invite codes are generated and distributed privately by
+                  admins.
+                </p>
+              )}
             </article>
           </div>
         </div>

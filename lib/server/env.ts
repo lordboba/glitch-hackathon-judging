@@ -19,5 +19,5 @@ export const env = {
   ),
   sessionSecret: readEnv("SESSION_SECRET", "local-dev-session-secret"),
   appUrl: readEnv("APP_URL", "http://localhost:3000"),
-  adminAuthCode: readEnv("ADMIN_AUTH_CODE", "ORBIT-ADMIN-2026"),
+  adminAuthCode: readEnv("ADMIN_AUTH_CODE", "change-me-admin-code"),
 };

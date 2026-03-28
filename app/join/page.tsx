@@ -31,17 +31,23 @@ export default async function JoinPage({
           Invite redemption creates a database-backed judge session and binds the judge to the
           correct event roster.
         </p>
-        <div className="token-list">
-          {invites.map((invite) => (
-            <div className="token-row" key={invite.id}>
-              <div>
-                <strong>{invite.label}</strong>
+        {invites.length > 0 ? (
+          <div className="token-list">
+            {invites.map((invite) => (
+              <div className="token-row" key={invite.id}>
+                <div>
+                  <strong>{invite.label}</strong>
+                  <span>{invite.eventName}</span>
+                </div>
                 <span>{invite.email}</span>
               </div>
-              <code>{invite.demoCode}</code>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="lede">
+            No public invite directory is shown here. Ask an organizer for a private judge invite code.
+          </p>
+        )}
         <Link className="text-link" href="/">
           &larr; Back to overview
         </Link>
@@ -54,7 +60,7 @@ export default async function JoinPage({
         <form action={joinWithInvite} className="stack-form">
           <label>
             <span>Invite code</span>
-            <input name="inviteCode" placeholder="JUDGE-ORBIT-27" required type="text" />
+            <input name="inviteCode" placeholder="Enter your private invite code" required type="text" />
           </label>
           <button className="button button-primary button-full" type="submit">
             Continue to workspace
