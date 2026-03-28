@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { signOut } from "@/app/actions";
-import AdminConfigurator from "@/components/admin-configurator";
+import AdminPortal from "@/components/admin-portal";
 import { getSession } from "@/lib/auth";
-import { adminInvites, defaultHackathonConfig } from "@/lib/mock-data";
+import { defaultHackathonConfig } from "@/lib/mock-data";
 
 export default async function AdminPage() {
   const session = await getSession();
@@ -31,11 +31,7 @@ export default async function AdminPage() {
         </div>
       </header>
 
-      <AdminConfigurator
-        initialConfig={defaultHackathonConfig}
-        initialInvites={adminInvites.map((invite) => ({ ...invite }))}
-        organizerName={session.name}
-      />
+      <AdminPortal initialConfig={defaultHackathonConfig} organizerName={session.name} />
     </main>
   );
 }
