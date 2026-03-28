@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Signal Jury",
+  title: "glitch_graders",
   description:
-    "Next.js mockup for a configurable hackathon platform with gated organizer access and invite-based participant workspaces.",
+    "Hackathon grading platform with configurable scoring, invite-based access, and role-specific workspaces.",
 };
 
 export default function RootLayout({
@@ -16,6 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

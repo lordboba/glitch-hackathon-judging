@@ -1,11 +1,13 @@
 import Link from "next/link";
 
 import { joinWithInvite } from "@/app/actions";
-import { participantInviteDirectory } from "@/lib/mock-data";
+import { listOpenJudgeInvites } from "@/lib/server/events";
+
+export const dynamic = "force-dynamic";
 
 function getMessage(error?: string) {
   if (error === "invalid_invite") {
-    return "That invite code does not match the current event roster.";
+    return "That invite code was invalid, already redeemed, or revoked.";
   }
 
   return null;
@@ -16,38 +18,38 @@ export default async function JoinPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const params = await searchParams;
+  const [params, invites] = await Promise.all([searchParams, listOpenJudgeInvites()]);
   const error = typeof params.error === "string" ? params.error : undefined;
   const message = getMessage(error);
 
   return (
     <main className="access-shell">
       <section className="access-card access-card-emphasis">
-        <p className="eyebrow">Invite access</p>
-        <h1>Judges and builders enter through invite codes, not the admin route.</h1>
+        <p className="eyebrow">Judge invite access</p>
+        <h1>Judges enter with single-use invite codes.</h1>
         <p className="lede">
-          The organizer configures the event first, then sends role-specific invites. This keeps the
-          product closer to how a real hosted hackathon should be operated.
+          Invite redemption creates a database-backed judge session and binds the judge to the
+          correct event roster.
         </p>
         <div className="token-list">
-          {participantInviteDirectory.map((invite) => (
-            <div className="token-row" key={invite.code}>
+          {invites.map((invite) => (
+            <div className="token-row" key={invite.id}>
               <div>
-                <strong>{invite.role}</strong>
-                <span>{invite.label}</span>
+                <strong>{invite.label}</strong>
+                <span>{invite.email}</span>
               </div>
-              <code>{invite.code}</code>
+              <code>{invite.demoCode}</code>
             </div>
           ))}
         </div>
         <Link className="text-link" href="/">
-          Back to overview
+          &larr; Back to overview
         </Link>
       </section>
 
       <section className="access-card">
-        <p className="eyebrow">Join this event</p>
-        <h2>Enter the invite code you received.</h2>
+        <p className="eyebrow">Join event</p>
+        <h2>Enter your judge invite code.</h2>
         {message ? <p className="inline-error">{message}</p> : null}
         <form action={joinWithInvite} className="stack-form">
           <label>

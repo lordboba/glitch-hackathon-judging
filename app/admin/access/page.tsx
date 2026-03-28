@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 import { authorizeAdmin } from "@/app/actions";
+import { env } from "@/lib/server/env";
+
+export const dynamic = "force-dynamic";
 
 function getMessage(error?: string) {
   switch (error) {
@@ -26,23 +29,23 @@ export default async function AdminAccessPage({
     <main className="access-shell">
       <section className="access-card access-card-emphasis">
         <p className="eyebrow">Organizer authorization</p>
-        <h1>Special access is required before someone becomes an admin.</h1>
+        <h1>Admin access is validated against a database-backed access code.</h1>
         <p className="lede">
-          This route represents the extra organizer gate. In this mockup, the code is validated
-          server-side and the resulting admin session is stored in secure cookies.
+          The code is stored hashed in PostgreSQL, sessions are issued server-side, and only
+          authenticated admins can reach the organizer area.
         </p>
         <div className="info-block">
           <span>Demo code</span>
-          <code>ORBIT-ADMIN-2026</code>
+          <code>{env.adminAuthCode}</code>
         </div>
         <Link className="text-link" href="/">
-          Back to overview
+          &larr; Back to overview
         </Link>
       </section>
 
       <section className="access-card">
-        <p className="eyebrow">Organizer sign-in</p>
-        <h2>Enter the organizer identity and authorization code.</h2>
+        <p className="eyebrow">Sign in</p>
+        <h2>Enter your identity and authorization code.</h2>
         {message ? <p className="inline-error">{message}</p> : null}
         <form action={authorizeAdmin} className="stack-form">
           <label>
@@ -51,16 +54,11 @@ export default async function AdminAccessPage({
           </label>
           <label>
             <span>Work email</span>
-            <input name="email" placeholder="morgan@signaljury.dev" required type="email" />
+            <input name="email" placeholder="morgan@glitchgraders.dev" required type="email" />
           </label>
           <label>
             <span>Authorization code</span>
-            <input
-              name="authorizationCode"
-              placeholder="ORBIT-ADMIN-2026"
-              required
-              type="password"
-            />
+            <input name="authorizationCode" placeholder="ORBIT-ADMIN-2026" required type="password" />
           </label>
           <button className="button button-primary button-full" type="submit">
             Unlock organizer workspace

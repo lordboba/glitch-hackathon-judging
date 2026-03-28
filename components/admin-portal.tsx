@@ -1010,21 +1010,46 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
 
       <style jsx>{`
         .admin-portal {
+          --ink: #0f172a;
+          --muted: #64748b;
+          --accent: #2563eb;
+          --line: #e2e8f0;
+          --surface: #f8fafc;
+          --bg: #ffffff;
           min-height: 100vh;
+          font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+          color: var(--ink);
+        }
+
+        .admin-portal h1,
+        .admin-portal h2,
+        .admin-portal h3,
+        .admin-portal h4 {
+          font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+          font-weight: 700;
+        }
+
+        .eyebrow {
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--accent);
+          margin: 0 0 4px;
         }
 
         .portal-shell {
           display: grid;
-          grid-template-columns: 300px minmax(0, 1fr);
-          gap: 24px;
+          grid-template-columns: 280px minmax(0, 1fr);
+          gap: 20px;
           align-items: start;
         }
 
         .portal-rail {
           position: sticky;
-          top: 24px;
+          top: 20px;
           display: grid;
-          gap: 18px;
+          gap: 14px;
         }
 
         .rail-block,
@@ -1032,10 +1057,10 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .portal-card {
           position: relative;
           overflow: hidden;
-          border: 1px solid #d7dee7;
-          border-radius: 22px;
-          background: rgba(255, 255, 255, 0.92);
-          box-shadow: 0 18px 40px rgba(17, 24, 39, 0.06);
+          border: 1px solid var(--line);
+          border-radius: 10px;
+          background: var(--bg);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
         }
 
         .rail-block::before,
@@ -1043,30 +1068,28 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .portal-card::before {
           content: "";
           position: absolute;
-          inset: 18px auto 18px 0;
-          width: 4px;
+          inset: 12px auto 12px 0;
+          width: 3px;
           border-radius: 999px;
-          background: linear-gradient(180deg, #1f4ed8, #0f766e);
+          background: var(--accent);
         }
 
         .rail-block,
         .portal-card {
-          padding: 22px;
+          padding: 16px;
         }
 
         .portal-main {
           display: grid;
-          gap: 20px;
+          gap: 16px;
         }
 
         .portal-hero {
           display: grid;
           grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(0, 1fr));
-          gap: 18px;
-          padding: 24px;
-          background:
-            radial-gradient(circle at top right, rgba(31, 78, 216, 0.08), transparent 28%),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 241, 244, 0.92));
+          gap: 14px;
+          padding: 20px;
+          background: var(--bg);
         }
 
         .hero-copy,
@@ -1081,8 +1104,8 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .ranking-main p,
         .score-stack span {
           margin: 0;
-          color: #5b6472;
-          line-height: 1.55;
+          color: var(--muted);
+          line-height: 1.5;
         }
 
         .hero-metrics {
@@ -1090,10 +1113,10 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         }
 
         .metric-card {
-          border-radius: 18px;
-          background: #f8fafc;
-          border: 1px solid #d7dee7;
-          padding: 18px;
+          border-radius: 8px;
+          background: var(--surface);
+          border: 1px solid var(--line);
+          padding: 14px;
         }
 
         .metric-card span,
@@ -1101,16 +1124,16 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .note-field span,
         .mapping-row strong + span {
           display: block;
-          font-size: 0.82rem;
+          font-size: 0.8rem;
         }
 
         .metric-card strong,
         .summary-stat strong,
         .score-stack strong {
           display: block;
-          margin: 8px 0 4px;
-          font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
-          font-size: 1.45rem;
+          margin: 6px 0 2px;
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 1.4rem;
         }
 
         .rail-chip,
@@ -1127,18 +1150,19 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .rail-chip,
         .tag,
         .status-badge {
-          gap: 8px;
-          padding: 10px 14px;
-          border-radius: 999px;
-          border: 1px solid #d7dee7;
-          background: #eef4ff;
-          color: #1f4ed8;
-          font-size: 0.84rem;
+          gap: 6px;
+          padding: 6px 10px;
+          border-radius: 6px;
+          border: 1px solid var(--line);
+          background: var(--surface);
+          color: var(--accent);
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 0.78rem;
         }
 
         .status-indicator {
-          width: 9px;
-          height: 9px;
+          width: 8px;
+          height: 8px;
           border-radius: 999px;
           background: #15803d;
         }
@@ -1148,7 +1172,7 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .preview-list,
         .ranking-list {
           display: grid;
-          gap: 12px;
+          gap: 10px;
         }
 
         .event-card,
@@ -1161,22 +1185,22 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .event-card {
           width: 100%;
           text-align: left;
-          border: 1px solid #d7dee7;
-          border-radius: 16px;
-          background: #fff;
-          padding: 16px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          background: var(--bg);
+          padding: 12px;
           cursor: pointer;
         }
 
         .event-card.active {
-          border-color: rgba(31, 78, 216, 0.45);
-          box-shadow: 0 10px 24px rgba(31, 78, 216, 0.12);
-          background: #f6f9ff;
+          border-color: var(--accent);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+          background: var(--surface);
         }
 
         .summary-stat {
-          padding: 14px 0;
-          border-top: 1px solid #e6ebf0;
+          padding: 10px 0;
+          border-top: 1px solid var(--line);
         }
 
         .summary-stat:first-of-type {
@@ -1186,7 +1210,7 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .portal-grid {
           display: grid;
           grid-template-columns: repeat(12, minmax(0, 1fr));
-          gap: 20px;
+          gap: 16px;
         }
 
         .portal-card {
@@ -1204,14 +1228,14 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .ranking-controls {
           display: flex;
           justify-content: space-between;
-          gap: 16px;
+          gap: 12px;
           align-items: flex-start;
         }
 
         .form-grid,
         .rule-stack {
           display: grid;
-          gap: 14px;
+          gap: 10px;
         }
 
         .form-grid {
@@ -1222,47 +1246,49 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .form-grid label,
         .note-field {
           display: grid;
-          gap: 8px;
+          gap: 6px;
         }
 
         .rule-stack span,
         .form-grid span,
         .note-field span {
-          font-size: 0.88rem;
-          color: #111827;
+          font-size: 0.85rem;
+          color: var(--ink);
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
         }
 
         .ingest-banner {
-          margin-bottom: 16px;
-          padding: 14px 16px;
-          border-radius: 16px;
-          background: #f8fafc;
-          border: 1px solid #d7dee7;
-          color: #5b6472;
+          margin-bottom: 12px;
+          padding: 10px 14px;
+          border-radius: 8px;
+          background: var(--surface);
+          border: 1px solid var(--line);
+          color: var(--muted);
         }
 
         .mapping-table {
           display: grid;
-          gap: 10px;
+          gap: 8px;
         }
 
         .mapping-row {
           display: grid;
           grid-template-columns: minmax(0, 1.15fr) minmax(180px, 0.9fr) auto;
-          gap: 12px;
+          gap: 10px;
           align-items: center;
-          padding: 14px;
-          border-radius: 16px;
-          background: #f8fafc;
-          border: 1px solid #e0e7ef;
+          padding: 10px;
+          border-radius: 8px;
+          background: var(--surface);
+          border: 1px solid var(--line);
         }
 
         .required-flag {
-          padding: 8px 10px;
-          border-radius: 999px;
-          background: #eef1f4;
-          color: #5b6472;
-          font-size: 0.78rem;
+          padding: 4px 8px;
+          border-radius: 6px;
+          background: var(--surface);
+          color: var(--muted);
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 0.75rem;
         }
 
         .required-flag.required {
@@ -1273,29 +1299,33 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .action-row {
           display: flex;
           justify-content: space-between;
-          gap: 16px;
+          gap: 12px;
           align-items: center;
-          margin-top: 18px;
+          margin-top: 14px;
         }
 
         .portal-button {
-          border: 1px solid transparent;
-          border-radius: 16px;
-          min-height: 46px;
-          padding: 0 16px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          min-height: 40px;
+          padding: 0 14px;
           font-weight: 600;
+          font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
           cursor: pointer;
+          background: var(--bg);
+          color: var(--ink);
         }
 
         .portal-button-primary {
-          background: #1f4ed8;
-          color: white;
+          background: var(--ink);
+          color: var(--bg);
+          border-color: var(--ink);
         }
 
         .catalog-toolbar {
           display: grid;
-          gap: 12px;
-          margin-bottom: 16px;
+          gap: 10px;
+          margin-bottom: 12px;
         }
 
         .project-grid {
@@ -1303,45 +1333,46 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         }
 
         .project-card {
-          padding: 18px;
-          border-radius: 18px;
-          border: 1px solid #dfe6ee;
-          background: #fbfcfd;
+          padding: 14px;
+          border-radius: 10px;
+          border: 1px solid var(--line);
+          background: var(--bg);
         }
 
         .project-card h4 {
-          margin-top: 10px;
-          font-size: 1.35rem;
+          margin-top: 8px;
+          font-size: 1.2rem;
         }
 
         .rank-badge {
-          min-width: 42px;
-          padding: 8px 10px;
-          border-radius: 999px;
-          background: #111827;
-          color: white;
-          font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
-          font-size: 0.78rem;
+          min-width: 38px;
+          padding: 4px 8px;
+          border-radius: 6px;
+          background: var(--ink);
+          color: var(--bg);
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 0.75rem;
         }
 
         .project-meta,
         .link-strip {
           display: flex;
           flex-wrap: wrap;
-          gap: 10px;
-          margin-top: 14px;
+          gap: 8px;
+          margin-top: 10px;
         }
 
         .project-meta span,
         .link-strip a {
-          padding: 8px 10px;
-          border-radius: 999px;
-          background: #eef1f4;
-          font-size: 0.8rem;
+          padding: 4px 8px;
+          border-radius: 6px;
+          background: var(--surface);
+          font-size: 0.78rem;
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
         }
 
         .link-strip a {
-          color: #1f4ed8;
+          color: var(--accent);
         }
 
         .status-ready {
@@ -1362,11 +1393,11 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
         .switch-row {
           display: flex !important;
           align-items: center;
-          gap: 10px;
-          padding: 12px 14px;
-          border-radius: 14px;
-          background: #f8fafc;
-          border: 1px solid #e0e7ef;
+          gap: 8px;
+          padding: 10px 12px;
+          border-radius: 8px;
+          background: var(--surface);
+          border: 1px solid var(--line);
         }
 
         .switch-row input {
@@ -1375,31 +1406,32 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
 
         .preview-row,
         .ranking-row {
-          padding: 14px 16px;
-          border-radius: 16px;
-          background: #f8fafc;
-          border: 1px solid #e0e7ef;
+          padding: 10px 14px;
+          border-radius: 8px;
+          background: var(--surface);
+          border: 1px solid var(--line);
         }
 
         .mini-actions {
           display: flex;
-          gap: 8px;
+          gap: 6px;
         }
 
         .mini-actions button {
-          border: 1px solid #d7dee7;
-          border-radius: 12px;
-          background: white;
-          padding: 8px 10px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          background: var(--bg);
+          padding: 6px 10px;
           cursor: pointer;
+          font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
         }
 
         .mini-actions button:hover,
         .event-card:hover,
         .link-strip a:hover,
         .portal-button:hover {
-          border-color: rgba(31, 78, 216, 0.35);
-          box-shadow: 0 8px 18px rgba(17, 24, 39, 0.08);
+          border-color: var(--accent);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
         }
 
         .score-stack {
@@ -1408,6 +1440,10 @@ export default function AdminPortal({ organizerName, initialConfig }: AdminPorta
 
         .note-field {
           min-width: 240px;
+        }
+
+        .progress-fill {
+          background: var(--accent);
         }
 
         @media (max-width: 1200px) {

@@ -1,0 +1,291 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  JUDGE
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum EventStatus {
+  DRAFT
+  OPEN_INTAKE
+  JUDGING_LIVE
+  COMPLETED
+}
+
+enum InviteCodeStatus {
+  SENT
+  REDEEMED
+  REVOKED
+}
+
+enum ProjectStatus {
+  READY
+  MISSING_VIDEO
+  NEEDS_REVIEW
+}
+
+enum ImportStatus {
+  PREVIEWED
+  IMPORTED
+  FAILED
+}
+
+enum LinkType {
+  REPO
+  DEMO
+  SUBMISSION
+}
+
+enum ScorecardStatus {
+  DRAFT
+  SUBMITTED
+}
+
+enum SnapshotStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum AdminAccessCodeStatus {
+  ACTIVE
+  DISABLED
+}
+
+model User {
+  id                    String                @id @default(cuid())
+  email                 String                @unique
+  name                  String
+  role                  UserRole
+  status                UserStatus            @default(ACTIVE)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  sessions              Session[]
+  eventParticipants     EventParticipant[]
+  redeemedInvites       InviteCode[]          @relation("InviteRedeemer")
+  uploadedImportBatches ImportBatch[]
+  assignedProjects      ProjectAssignment[]   @relation("AssignedJudge")
+  assignmentMutations   ProjectAssignment[]   @relation("AssignmentActor")
+  scorecards            Scorecard[]
+  leaderboardSnapshots  LeaderboardSnapshot[]
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  lastSeenAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AdminAccessCode {
+  id        String                @id @default(cuid())
+  codeHash  String                @unique
+  label     String
+  status    AdminAccessCodeStatus @default(ACTIVE)
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+}
+
+model Event {
+  id                     String                @id @default(cuid())
+  name                   String
+  hostOrganization       String
+  slug                   String                @unique
+  type                   String
+  mode                   String
+  format                 String
+  visibility             String
+  audience               String
+  judgeAssignmentMode    String
+  scoringMode            String
+  judgingModel           String
+  duration               String
+  timezone               String
+  startDate              DateTime
+  endDate                DateTime
+  location               String
+  maxTeams               Int
+  teamSizeMin            Int
+  teamSizeMax            Int
+  submissionWindowHours  Int
+  allowWaitlist          Boolean               @default(false)
+  allowLateEdits         Boolean               @default(false)
+  requirePortfolio       Boolean               @default(false)
+  requireKyc             Boolean               @default(false)
+  judgeCount             Int                   @default(0)
+  mentorCount            Int                   @default(0)
+  tracks                 String[]
+  participantRoles       String[]
+  organizerGoal          String
+  status                 EventStatus           @default(DRAFT)
+  assignmentPolicy       Json?
+  publishedLeaderboardAt DateTime?
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  inviteCodes            InviteCode[]
+  importBatches          ImportBatch[]
+  participants           EventParticipant[]
+  projects               Project[]
+  leaderboardSnapshots   LeaderboardSnapshot[]
+}
+
+model EventParticipant {
+  id                 String   @id @default(cuid())
+  eventId            String
+  userId             String
+  role               UserRole
+  track              String?
+  assignmentCapacity Int?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+}
+
+model InviteCode {
+  id               String           @id @default(cuid())
+  eventId          String
+  codeHash         String           @unique
+  role             UserRole
+  email            String
+  label            String
+  track            String?
+  status           InviteCodeStatus @default(SENT)
+  redeemedByUserId String?
+  redeemedAt       DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  event            Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  redeemedByUser   User?            @relation("InviteRedeemer", fields: [redeemedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([eventId])
+  @@index([email])
+}
+
+model ImportBatch {
+  id               String       @id @default(cuid())
+  eventId          String
+  uploadedByUserId String
+  sourceType       String
+  status           ImportStatus @default(PREVIEWED)
+  mappingConfig    Json
+  summary          Json?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  event            Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  uploadedByUser   User         @relation(fields: [uploadedByUserId], references: [id], onDelete: Cascade)
+  projects         Project[]
+
+  @@index([eventId])
+}
+
+model Project {
+  id               String              @id @default(cuid())
+  eventId          String
+  importBatchId    String?
+  slug             String
+  projectName      String
+  teamName         String
+  track            String?
+  description      String              @default("")
+  screeningScore   Float?
+  status           ProjectStatus       @default(READY)
+  manualAdjustment Float               @default(0)
+  tieBreakerNote   String              @default("")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  event            Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  importBatch      ImportBatch?        @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  links            ProjectLink[]
+  assignments      ProjectAssignment[]
+  scorecards       Scorecard[]
+
+  @@unique([eventId, projectName, teamName])
+  @@index([eventId])
+}
+
+model ProjectLink {
+  id        String   @id @default(cuid())
+  projectId String
+  type      LinkType
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, type])
+}
+
+model ProjectAssignment {
+  id               String   @id @default(cuid())
+  projectId        String
+  judgeUserId      String
+  assignedByUserId String
+  assignedAt       DateTime @default(now())
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  judgeUser        User     @relation("AssignedJudge", fields: [judgeUserId], references: [id], onDelete: Cascade)
+  assignedByUser   User     @relation("AssignmentActor", fields: [assignedByUserId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, judgeUserId])
+  @@index([judgeUserId])
+}
+
+model Scorecard {
+  id                String          @id @default(cuid())
+  projectId         String
+  judgeUserId       String
+  status            ScorecardStatus @default(DRAFT)
+  innovationScore   Int
+  executionScore    Int
+  impactScore       Int
+  designScore       Int
+  demoScore         Int
+  innovationComment String          @default("")
+  executionComment  String          @default("")
+  impactComment     String          @default("")
+  designComment     String          @default("")
+  demoComment       String          @default("")
+  overallComment    String          @default("")
+  submittedAt       DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  project           Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  judgeUser         User            @relation(fields: [judgeUserId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, judgeUserId])
+  @@index([judgeUserId])
+}
+
+model LeaderboardSnapshot {
+  id                String         @id @default(cuid())
+  eventId           String
+  generatedByUserId String
+  status            SnapshotStatus @default(DRAFT)
+  payload           Json
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  event             Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  generatedByUser   User           @relation(fields: [generatedByUserId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, status])
+}

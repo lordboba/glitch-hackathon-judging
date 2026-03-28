@@ -1,30 +1,49 @@
 import { redirect } from "next/navigation";
 
 import { signOut } from "@/app/actions";
-import ParticipantWorkspace from "@/components/participant-workspace";
+import JudgeDashboard from "@/components/judge-dashboard";
 import { getSession } from "@/lib/auth";
-import {
-  participantAssignments,
-  participantBuilderChecklist,
-} from "@/lib/mock-data";
+import { getJudgeWorkspace } from "@/lib/server/scoring";
 
-export default async function WorkspacePage() {
+export const dynamic = "force-dynamic";
+
+function noticeFromSaved(value?: string) {
+  switch (value) {
+    case "draft":
+      return "Draft scorecard saved.";
+    case "submitted":
+      return "Scorecard submitted and locked.";
+    default:
+      return undefined;
+  }
+}
+
+export default async function WorkspacePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const session = await getSession();
 
-  if (!session || (session.role !== "judge" && session.role !== "builder")) {
+  if (!session || session.role !== "judge") {
     redirect("/join");
   }
+
+  const params = await searchParams;
+  const eventId = typeof params.eventId === "string" ? params.eventId : undefined;
+  const saved = typeof params.saved === "string" ? params.saved : undefined;
+  const workspace = await getJudgeWorkspace(session.id, eventId);
 
   return (
     <main className="workspace-shell">
       <header className="workspace-topbar">
         <div>
-          <p className="eyebrow">Participant workspace</p>
-          <h1>{session.role === "judge" ? "Judge scoring desk" : "Builder submission desk"}</h1>
+          <p className="eyebrow">Judge workspace</p>
+          <h1>Assigned scorecards</h1>
         </div>
         <div className="utility-cluster">
           <span className="utility-pill utility-pill-strong">
-            {session.name} · {session.role}
+            {session.name} · judge
           </span>
           <form action={signOut}>
             <button className="button button-ghost" type="submit">
@@ -34,21 +53,11 @@ export default async function WorkspacePage() {
         </div>
       </header>
 
-      <ParticipantWorkspace
-        assignments={participantAssignments.map((assignment) => ({ ...assignment }))}
-        builderChecklist={participantBuilderChecklist.map((item) => ({ ...item }))}
-        session={{
-          role: session.role,
-          userName: session.name,
-          orgName: "Signal Labs",
-          hackathonName: "AI Builder Finals",
-          teamName: session.role === "builder" ? "Northstar Labs" : undefined,
-          inviteStatus: "verified",
-          accessLabel:
-            session.role === "judge"
-              ? "Invite-verified judge access"
-              : "Invite-verified builder access",
-        }}
+      <JudgeDashboard
+        assignments={workspace.assignments}
+        events={workspace.events.map((event) => ({ id: event.id, name: event.name }))}
+        notice={noticeFromSaved(saved)}
+        selectedEvent={workspace.selectedEvent}
       />
     </main>
   );

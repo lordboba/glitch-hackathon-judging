@@ -200,7 +200,6 @@ export default function AdminConfigurator({
 
   return (
     <div className="admin-configurator">
-      <div className="backdrop-grid" aria-hidden="true" />
 
       <section className="shell">
         <header className="topbar">
@@ -700,37 +699,20 @@ export default function AdminConfigurator({
 
       <style>{`
         .admin-configurator {
-          --bg: #f7f7f4;
-          --surface: #ffffff;
-          --surface-alt: #eef1f4;
-          --text: #111827;
-          --muted: #5b6472;
-          --primary: #1f4ed8;
-          --primary-deep: #173db0;
-          --teal: #0f766e;
-          --border: #d7dee7;
-          --shadow: 0 14px 40px rgba(17, 24, 39, 0.08);
-          --radius: 20px;
+          --bg: #ffffff;
+          --surface: #f8fafc;
+          --ink: #0f172a;
+          --muted: #64748b;
+          --accent: #2563eb;
+          --line: #e2e8f0;
+          --shadow: 0 1px 3px rgba(15,23,42,0.06);
+          --radius: 10px;
           position: relative;
           min-height: 100vh;
-          padding: 24px;
-          background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(247, 247, 244, 0.94)),
-            var(--bg);
-          color: var(--text);
-          font-family: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
-        }
-
-        .backdrop-grid {
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          opacity: 0.18;
-          background-image:
-            linear-gradient(to right, rgba(215, 222, 231, 0.55) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(215, 222, 231, 0.45) 1px, transparent 1px);
-          background-size: 42px 42px;
-          mask-image: linear-gradient(180deg, transparent, black 12%, black 88%, transparent);
+          padding: 20px;
+          background: var(--bg);
+          color: var(--ink);
+          font-family: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", sans-serif;
         }
 
         .shell {
@@ -744,13 +726,13 @@ export default function AdminConfigurator({
         .content-grid,
         .bottom-grid {
           display: grid;
-          gap: 24px;
+          gap: 20px;
         }
 
         .topbar {
           grid-template-columns: 1.5fr 0.9fr;
           align-items: end;
-          margin-bottom: 24px;
+          margin-bottom: 20px;
         }
 
         h1,
@@ -762,27 +744,30 @@ export default function AdminConfigurator({
 
         h1,
         h2 {
-          font-family: "Instrument Serif", Georgia, serif;
-          letter-spacing: -0.03em;
-          line-height: 0.95;
+          font-family: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", sans-serif;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          line-height: 1.1;
         }
 
         h1 {
-          font-size: clamp(2.7rem, 6vw, 4.4rem);
-          margin-top: 8px;
+          font-size: clamp(2.2rem, 5vw, 3.4rem);
+          margin-top: 6px;
         }
 
         h2 {
-          font-size: clamp(1.4rem, 3vw, 2.15rem);
+          font-size: clamp(1.2rem, 2.5vw, 1.7rem);
         }
 
         .eyebrow,
         .section-label {
           display: block;
-          margin-bottom: 10px;
-          color: var(--muted);
-          font-size: 0.74rem;
-          letter-spacing: 0.18em;
+          margin-bottom: 8px;
+          color: var(--accent);
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
         }
 
@@ -806,15 +791,15 @@ export default function AdminConfigurator({
         .launch-panel,
         .panel {
           background: var(--surface);
-          border: 1px solid var(--border);
+          border: 1px solid var(--line);
           border-radius: var(--radius);
           box-shadow: var(--shadow);
         }
 
         .org-card {
-          padding: 20px;
+          padding: 16px;
           display: grid;
-          gap: 6px;
+          gap: 4px;
         }
 
         .org-card span,
@@ -827,13 +812,13 @@ export default function AdminConfigurator({
         }
 
         .content-grid {
-          grid-template-columns: 340px minmax(0, 1fr);
+          grid-template-columns: 320px minmax(0, 1fr);
           align-items: start;
         }
 
         .sidebar {
           display: grid;
-          gap: 16px;
+          gap: 14px;
         }
 
         .lock-panel,
@@ -841,7 +826,7 @@ export default function AdminConfigurator({
         .launch-panel,
         .panel,
         .bottom-grid .panel {
-          padding: 24px;
+          padding: 20px;
         }
 
         .lock-head,
@@ -849,8 +834,8 @@ export default function AdminConfigurator({
           display: flex;
           justify-content: space-between;
           align-items: start;
-          gap: 16px;
-          margin-bottom: 18px;
+          gap: 12px;
+          margin-bottom: 14px;
         }
 
         .status-pill,
@@ -859,48 +844,57 @@ export default function AdminConfigurator({
         .status-dot {
           display: inline-flex;
           align-items: center;
-          padding: 8px 11px;
-          border-radius: 999px;
-          font-size: 0.78rem;
+          padding: 6px 10px;
+          border-radius: 8px;
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 0.75rem;
           font-weight: 600;
-          background: var(--surface-alt);
-          color: var(--text);
+          background: var(--surface);
+          color: var(--ink);
+          border: 1px solid var(--line);
         }
 
         .panel-badge.ready {
-          background: rgba(15, 118, 110, 0.12);
-          color: var(--teal);
+          background: rgba(22, 163, 74, 0.08);
+          color: #15803d;
+          border-color: rgba(22, 163, 74, 0.2);
         }
 
         .panel-badge.pending {
-          background: rgba(31, 78, 216, 0.1);
-          color: var(--primary);
+          background: rgba(37, 99, 235, 0.08);
+          color: var(--accent);
+          border-color: rgba(37, 99, 235, 0.2);
         }
 
         .field,
         .toggle,
         .publish-toggle {
           display: grid;
-          gap: 8px;
+          gap: 6px;
+        }
+
+        .field span {
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 0.78rem;
         }
 
         .field input,
         .field select {
           width: 100%;
-          border: 1px solid var(--border);
-          border-radius: 14px;
-          padding: 12px 14px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          padding: 10px 12px;
           font: inherit;
           background: #fff;
-          color: var(--text);
+          color: var(--ink);
           outline: none;
           transition: border-color 140ms ease, box-shadow 140ms ease;
         }
 
         .field input:focus,
         .field select:focus {
-          border-color: rgba(31, 78, 216, 0.45);
-          box-shadow: 0 0 0 4px rgba(31, 78, 216, 0.1);
+          border-color: var(--accent);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .token-row,
@@ -909,25 +903,26 @@ export default function AdminConfigurator({
         .summary-grid,
         .invite-meta {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           flex-wrap: wrap;
         }
 
         code {
-          padding: 10px 12px;
-          border-radius: 12px;
-          background: #f3f6fb;
-          color: #1b2a4a;
-          font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
-          font-size: 0.82rem;
+          padding: 8px 10px;
+          border-radius: 8px;
+          background: var(--surface);
+          color: var(--ink);
+          font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+          font-size: 0.8rem;
+          border: 1px solid var(--line);
         }
 
         .secondary-button,
         .primary-button,
         .mini-actions button {
-          border: 1px solid var(--border);
-          border-radius: 999px;
-          padding: 11px 16px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          padding: 9px 14px;
           font: inherit;
           font-weight: 600;
           cursor: pointer;
@@ -937,34 +932,35 @@ export default function AdminConfigurator({
         .secondary-button,
         .mini-actions button {
           background: #fff;
-          color: var(--text);
+          color: var(--ink);
+          border-color: var(--line);
         }
 
         .primary-button {
-          background: var(--primary);
+          background: var(--ink);
           color: #fff;
-          border-color: var(--primary);
+          border-color: var(--ink);
         }
 
         .secondary-button:hover,
         .primary-button:hover,
         .mini-actions button:hover {
           transform: translateY(-1px);
-          box-shadow: 0 10px 20px rgba(17, 24, 39, 0.08);
+          box-shadow: 0 1px 3px rgba(15,23,42,0.06);
         }
 
         .progress-track {
-          height: 10px;
+          height: 8px;
           border-radius: 999px;
-          background: #edf2f7;
+          background: var(--line);
           overflow: hidden;
-          margin: 14px 0 18px;
+          margin: 12px 0 16px;
         }
 
         .progress-fill {
           height: 100%;
           border-radius: inherit;
-          background: linear-gradient(90deg, var(--primary), var(--teal));
+          background: var(--accent);
         }
 
         .summary-grid {
@@ -976,9 +972,9 @@ export default function AdminConfigurator({
           display: grid;
           gap: 4px;
           align-content: start;
-          min-height: 84px;
-          padding: 14px;
-          border: 1px solid var(--border);
+          min-height: 72px;
+          padding: 12px;
+          border: 1px solid var(--line);
           background: #fff;
         }
 
@@ -988,42 +984,42 @@ export default function AdminConfigurator({
 
         .checklist {
           display: grid;
-          gap: 12px;
+          gap: 10px;
         }
 
         .check-item {
-          padding: 14px;
-          border-radius: 16px;
-          border: 1px solid var(--border);
-          background: #fafbfd;
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px solid var(--line);
+          background: var(--surface);
           display: flex;
           justify-content: space-between;
-          gap: 16px;
+          gap: 12px;
         }
 
         .check-item.ready {
-          border-color: rgba(15, 118, 110, 0.22);
-          background: rgba(15, 118, 110, 0.06);
+          border-color: rgba(22, 163, 74, 0.2);
+          background: rgba(22, 163, 74, 0.04);
         }
 
         .check-item.warning {
           border-color: rgba(180, 83, 9, 0.2);
-          background: rgba(180, 83, 9, 0.05);
+          background: rgba(180, 83, 9, 0.04);
         }
 
         .check-item.pending {
-          border-color: rgba(31, 78, 216, 0.18);
-          background: rgba(31, 78, 216, 0.05);
+          border-color: rgba(37, 99, 235, 0.18);
+          background: rgba(37, 99, 235, 0.04);
         }
 
         .field-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 14px;
+          gap: 12px;
         }
 
         .field-grid.compact {
-          margin-bottom: 18px;
+          margin-bottom: 14px;
         }
 
         .span-2 {
@@ -1033,22 +1029,22 @@ export default function AdminConfigurator({
         .option-grid {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 12px;
-          margin-bottom: 18px;
+          gap: 10px;
+          margin-bottom: 14px;
         }
 
         .option-grid.dense {
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          margin-top: 14px;
+          margin-top: 12px;
         }
 
         .option-card,
         .row-option {
           text-align: left;
-          border: 1px solid var(--border);
+          border: 1px solid var(--line);
           background: #fff;
-          border-radius: 18px;
-          padding: 14px;
+          border-radius: 10px;
+          padding: 12px;
           cursor: pointer;
           transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
         }
@@ -1056,38 +1052,38 @@ export default function AdminConfigurator({
         .option-card strong,
         .row-option strong {
           display: block;
-          margin-bottom: 6px;
+          margin-bottom: 4px;
         }
 
         .option-card.active,
         .row-option.active,
         .pill.active {
-          border-color: rgba(31, 78, 216, 0.38);
-          box-shadow: 0 12px 24px rgba(31, 78, 216, 0.08);
+          border-color: var(--accent);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .option-card.narrow {
-          min-height: 104px;
+          min-height: 96px;
         }
 
         .split-grid {
           display: grid;
           grid-template-columns: 0.95fr 1.05fr;
-          gap: 16px;
+          gap: 14px;
         }
 
         .pill-row,
         .option-list {
           display: grid;
-          gap: 10px;
+          gap: 8px;
         }
 
         .pill {
           width: fit-content;
-          border: 1px solid var(--border);
+          border: 1px solid var(--line);
           background: #fff;
-          padding: 10px 14px;
-          border-radius: 999px;
+          padding: 8px 12px;
+          border-radius: 8px;
           cursor: pointer;
           font-weight: 600;
         }
@@ -1101,15 +1097,15 @@ export default function AdminConfigurator({
         .toggle-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 12px;
-          margin-top: 16px;
+          gap: 10px;
+          margin-top: 14px;
         }
 
         .toggle,
         .publish-toggle {
-          padding: 14px;
-          border: 1px solid var(--border);
-          border-radius: 16px;
+          padding: 12px;
+          border: 1px solid var(--line);
+          border-radius: 8px;
           background: #fff;
           grid-template-columns: auto 1fr;
           align-items: start;
@@ -1123,45 +1119,45 @@ export default function AdminConfigurator({
         .toggle strong,
         .publish-toggle strong {
           display: block;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
         }
 
         .bottom-grid {
           grid-template-columns: 1.1fr 0.9fr;
           align-items: start;
-          margin-top: 24px;
+          margin-top: 20px;
         }
 
         .invite-form {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 12px;
-          margin-bottom: 16px;
+          gap: 10px;
+          margin-bottom: 14px;
         }
 
         .invite-form .primary-button {
           align-self: end;
-          height: 46px;
+          height: 42px;
         }
 
         .invite-meta {
-          margin-bottom: 16px;
+          margin-bottom: 14px;
         }
 
         .meta-stat {
           flex: 1;
-          min-width: 120px;
-          padding: 14px;
-          border-radius: 16px;
-          background: #fafbfd;
-          border: 1px solid var(--border);
+          min-width: 110px;
+          padding: 12px;
+          border-radius: 8px;
+          background: var(--surface);
+          border: 1px solid var(--line);
         }
 
         .meta-stat span {
           display: block;
           color: var(--muted);
-          font-size: 0.8rem;
-          margin-bottom: 6px;
+          font-size: 0.78rem;
+          margin-bottom: 4px;
         }
 
         .meta-stat strong {
@@ -1170,16 +1166,16 @@ export default function AdminConfigurator({
 
         .invite-list {
           display: grid;
-          gap: 10px;
+          gap: 8px;
         }
 
         .invite-row {
           display: grid;
           grid-template-columns: minmax(0, 1fr) auto;
-          gap: 16px;
-          padding: 16px;
-          border: 1px solid var(--border);
-          border-radius: 18px;
+          gap: 12px;
+          padding: 14px;
+          border: 1px solid var(--line);
+          border-radius: 10px;
           background: #fff;
         }
 
@@ -1195,27 +1191,31 @@ export default function AdminConfigurator({
         .invite-controls {
           display: grid;
           justify-items: end;
-          gap: 10px;
+          gap: 8px;
         }
 
         .status-dot.pending {
-          background: rgba(31, 78, 216, 0.08);
-          color: var(--primary);
+          background: rgba(37, 99, 235, 0.08);
+          color: var(--accent);
+          border-color: rgba(37, 99, 235, 0.18);
         }
 
         .status-dot.sent {
-          background: rgba(15, 118, 110, 0.12);
-          color: var(--teal);
+          background: rgba(22, 163, 74, 0.08);
+          color: #15803d;
+          border-color: rgba(22, 163, 74, 0.18);
         }
 
         .status-dot.accepted {
-          background: rgba(21, 128, 61, 0.12);
+          background: rgba(22, 163, 74, 0.1);
           color: #15803d;
+          border-color: rgba(22, 163, 74, 0.2);
         }
 
         .status-dot.revoked {
-          background: rgba(180, 35, 24, 0.12);
+          background: rgba(180, 35, 24, 0.08);
           color: #b42318;
+          border-color: rgba(180, 35, 24, 0.16);
         }
 
         .ghost-danger {
@@ -1225,16 +1225,16 @@ export default function AdminConfigurator({
 
         .config-summary {
           display: grid;
-          gap: 10px;
-          margin-bottom: 16px;
+          gap: 8px;
+          margin-bottom: 14px;
         }
 
         .summary-row {
           display: flex;
           justify-content: space-between;
-          gap: 16px;
-          padding: 12px 0;
-          border-bottom: 1px solid var(--border);
+          gap: 12px;
+          padding: 10px 0;
+          border-bottom: 1px solid var(--line);
         }
 
         .summary-row:last-child {
@@ -1246,7 +1246,7 @@ export default function AdminConfigurator({
         }
 
         .publish-actions {
-          margin-top: 16px;
+          margin-top: 14px;
         }
 
         @media (max-width: 1080px) {
@@ -1270,7 +1270,7 @@ export default function AdminConfigurator({
 
         @media (max-width: 720px) {
           .admin-configurator {
-            padding: 16px;
+            padding: 14px;
           }
 
           .field-grid,

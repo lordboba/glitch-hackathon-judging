@@ -263,33 +263,28 @@ export default function ParticipantWorkspace({
       <div className="shell">
         <aside className="rail">
           <div className="brand-block">
-            <p className="eyebrow">{session.hackathonName ?? "Hackathon Control"}</p>
-            <h1>{session.role === "judge" ? "Judge Workspace" : "Builder Workspace"}</h1>
-            <p className="subtle">
-              {session.orgName ? `${session.orgName} · ` : ""}
-              {session.userName}
+            <span className="brand-name">glitch<span className="brand-accent">_</span>graders</span>
+            <p className="rail-meta">
+              {session.hackathonName ?? "Hackathon"} · {session.userName}
             </p>
           </div>
 
-          <div className="panel">
-            <span className="label">Session</span>
-            <strong>{session.accessLabel ?? session.inviteStatus ?? "signed in"}</strong>
-            <p className="subtle">
-              {session.role === "judge"
-                ? "Invite-based judge access with scoring permissions only."
-                : "Builder access is linked to a verified team invite and submission status."}
-            </p>
+          <div className="rail-panel">
+            <span className="rail-label">Role</span>
+            <strong>{session.role === "judge" ? "Judge" : "Builder"}</strong>
           </div>
 
-          <div className="panel">
-            <span className="label">Participation</span>
+          <div className="rail-panel">
+            <span className="rail-label">Status</span>
             <strong>{inviteLabel(session.inviteStatus as Assignment["inviteStatus"])}</strong>
-            <p className="subtle">
-              {session.role === "judge"
-                ? "Judges can review assigned projects and submit final score sheets."
-                : "Builders can monitor checklist completion and invite progress before launch."}
-            </p>
           </div>
+
+          {session.role === "judge" && (
+            <div className="rail-panel">
+              <span className="rail-label">Queue</span>
+              <strong>{assignments.length} projects</strong>
+            </div>
+          )}
         </aside>
 
         <main className="content">
@@ -321,14 +316,14 @@ export default function ParticipantWorkspace({
                         <div className="project-card-top">
                           <div>
                             <strong>{assignment.title}</strong>
-                            <p>{assignment.teamName}</p>
+                            <p className="card-team">{assignment.teamName}</p>
                           </div>
-                          <span className="badge subtle-badge">{assignment.track ?? "General"}</span>
+                          <span className="score-pill">{assignmentTotal.toFixed(1)}</span>
                         </div>
-                        <p className="summary">{assignment.summary}</p>
-                        <div className="project-meta">
-                          <span>{assignment.stage ?? "Scoring"}</span>
-                          <span>{assignmentTotal.toFixed(2)} / 5.00</span>
+                        <p className="card-summary">{assignment.summary}</p>
+                        <div className="card-footer">
+                          <span className="badge">{assignment.track ?? "General"}</span>
+                          <span className="card-stage">{assignment.stage ?? "Scoring"}</span>
                         </div>
                       </button>
                     );
@@ -348,29 +343,27 @@ export default function ParticipantWorkspace({
 
                   {selectedAssignment ? (
                     <>
-                      <p className="summary">{selectedAssignment.description ?? selectedAssignment.summary}</p>
-                      <div className="detail-links">
+                      <p className="detail-desc">{selectedAssignment.description ?? selectedAssignment.summary}</p>
+                      <div className="detail-chips">
                         {selectedAssignment.repoUrl ? (
                           <span className="chip">Repo linked</span>
                         ) : (
-                          <span className="chip muted">Repo unavailable</span>
+                          <span className="chip chip-muted">Repo unavailable</span>
                         )}
                         {selectedAssignment.demoUrl ? (
                           <span className="chip">Demo linked</span>
                         ) : (
-                          <span className="chip muted">Demo unavailable</span>
+                          <span className="chip chip-muted">Demo unavailable</span>
                         )}
                         <span className="chip">{selectedAssignment.track ?? "General"}</span>
                       </div>
 
                       <div className="total-banner">
                         <div>
-                          <span className="label">Weighted total</span>
-                          <strong>{total.toFixed(2)} / 5.00</strong>
+                          <span className="total-label">Weighted total</span>
+                          <span className="total-value">{total.toFixed(2)}</span>
                         </div>
-                        <p className="subtle">
-                          Slider values are stored locally and recalculate the weighted score live.
-                        </p>
+                        <span className="total-max">/ 5.00</span>
                       </div>
                     </>
                   ) : null}
@@ -382,7 +375,7 @@ export default function ParticipantWorkspace({
                       <p className="eyebrow">Scoring</p>
                       <h2>Weighted rubric</h2>
                     </div>
-                    <span className="badge">1 to 5</span>
+                    <span className="badge">1–5</span>
                   </div>
 
                   <div className="criteria-list">
@@ -392,15 +385,16 @@ export default function ParticipantWorkspace({
 
                       return (
                         <div key={criterion.key} className="criterion">
-                          <div className="criterion-top">
-                            <div>
+                          <div className="criterion-header">
+                            <div className="criterion-info">
                               <strong>{criterion.label}</strong>
-                              <p>{criterion.helper}</p>
+                              <span className="criterion-weight">{Math.round(criterion.weight * 100)}%</span>
                             </div>
-                            <span className="chip weight-chip">{Math.round(criterion.weight * 100)}%</span>
+                            <span className="criterion-value">{value}</span>
                           </div>
+                          <p className="criterion-helper">{criterion.helper}</p>
                           <div className="slider-row">
-                            <span className="slider-label">1</span>
+                            <span className="slider-min">1</span>
                             <input
                               type="range"
                               min={1}
@@ -414,19 +408,17 @@ export default function ParticipantWorkspace({
                                 } as CSSProperties
                               }
                             />
-                            <span className="slider-label">
-                              {value} {SCORE_LABELS[value]}
-                            </span>
+                            <span className="slider-max">5</span>
                           </div>
+                          <span className="score-label-text">{SCORE_LABELS[value]}</span>
                           <label className="criterion-comment">
-                            <span>Comment</span>
                             <textarea
                               rows={2}
                               value={criterionComments[selectedAssignment?.id ?? ""]?.[criterion.key] ?? ""}
                               onChange={(event) =>
                                 updateCriterionComment(criterion.key, event.target.value)
                               }
-                              placeholder="Optional note for this criterion."
+                              placeholder="Optional note..."
                             />
                           </label>
                         </div>
@@ -435,9 +427,9 @@ export default function ParticipantWorkspace({
                   </div>
 
                   <label className="comment-field">
-                    <span>Comments</span>
+                    <span>Overall comments</span>
                     <textarea
-                      rows={4}
+                      rows={3}
                       value={judgeComments[selectedAssignment?.id ?? ""] ?? ""}
                       onChange={(event) => updateComment(event.target.value)}
                       placeholder="Leave a concise scoring note."
@@ -454,7 +446,7 @@ export default function ParticipantWorkspace({
                     <p className="eyebrow">Team checklist</p>
                     <h2>Submission readiness</h2>
                   </div>
-                  <span className="badge">{readinessPercent}% ready</span>
+                  <span className="badge">{readinessPercent}%</span>
                 </div>
 
                 <div className="checklist">
@@ -478,18 +470,13 @@ export default function ParticipantWorkspace({
 
                 <div className="status-grid">
                   <div className="status-card">
-                    <span className="label">Invite status</span>
+                    <span className="rail-label">Invite status</span>
                     <strong>{inviteLabel(session.inviteStatus as Assignment["inviteStatus"])}</strong>
-                    <p className="subtle">
-                      {session.role === "builder"
-                        ? "Access is tied to a verified invite from the organizer."
-                        : "Organizer authorization is required for admin access."}
-                    </p>
                   </div>
                   <div className="status-card">
-                    <span className="label">Launch readiness</span>
+                    <span className="rail-label">Readiness</span>
                     <strong>{builderItems.every((item) => item.done) ? "Ready" : "In progress"}</strong>
-                    <p className="subtle">{completedChecklist} of {builderItems.length} checklist items complete.</p>
+                    <p className="card-summary">{completedChecklist} of {builderItems.length} complete</p>
                   </div>
                 </div>
               </article>
@@ -497,10 +484,10 @@ export default function ParticipantWorkspace({
               <article className="panel invite-panel">
                 <div className="section-head">
                   <div>
-                    <p className="eyebrow">Invite status</p>
+                    <p className="eyebrow">Invite management</p>
                     <h2>Participant access</h2>
                   </div>
-                  <span className="badge">Local mock state</span>
+                  <span className="badge">Local mock</span>
                 </div>
 
                 <div className="invite-form">
@@ -537,7 +524,7 @@ export default function ParticipantWorkspace({
 
                   <button
                     type="button"
-                    className="primary-button"
+                    className="primary-btn"
                     onClick={() =>
                       setLaunchNote(
                         `Invite prepared for ${inviteValue || "new participant"} as ${inviteRole}. Status: ${inviteLabel(inviteStatus)}.`,
@@ -549,7 +536,7 @@ export default function ParticipantWorkspace({
                 </div>
 
                 <div className="invite-summary">
-                  <span className="label">Launch note</span>
+                  <span className="rail-label">Launch note</span>
                   <p>{launchNote}</p>
                 </div>
               </article>
@@ -562,87 +549,132 @@ export default function ParticipantWorkspace({
         .workspace {
           min-height: 100vh;
           padding: 24px;
-          background:
-            radial-gradient(circle at top left, rgba(31, 78, 216, 0.08), transparent 30%),
-            radial-gradient(circle at 80% 10%, rgba(15, 118, 110, 0.08), transparent 24%),
-            #f7f7f4;
-          color: #111827;
+          background: #ffffff;
+          color: #0f172a;
+          font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
         }
 
         .shell {
           display: grid;
-          grid-template-columns: 300px minmax(0, 1fr);
+          grid-template-columns: 260px minmax(0, 1fr);
           gap: 24px;
-          max-width: 1280px;
+          max-width: 1200px;
           margin: 0 auto;
         }
 
-        .rail,
-        .panel {
-          border: 1px solid #d7dee7;
-          border-radius: 20px;
-          background: rgba(255, 255, 255, 0.92);
-          box-shadow: 0 16px 48px rgba(17, 24, 39, 0.06);
-        }
-
+        /* ---- Rail ---- */
         .rail {
           position: sticky;
           top: 24px;
           align-self: start;
-          padding: 24px;
           display: grid;
-          gap: 16px;
+          gap: 12px;
         }
 
-        .brand-block h1,
-        .section-head h2 {
+        .brand-block {
+          padding: 20px;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          background: #0f172a;
+          color: #f8fafc;
+        }
+
+        .brand-name {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 16px;
+          font-weight: 600;
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        .brand-accent {
+          color: #2563eb;
+        }
+
+        .rail-meta {
           margin: 0;
-          font-family: "Instrument Serif", Georgia, serif;
-          font-size: clamp(1.9rem, 3vw, 2.6rem);
-          line-height: 0.96;
-          color: #111827;
+          font-size: 13px;
+          color: #94a3b8;
         }
 
-        .eyebrow,
-        .label {
-          display: inline-block;
-          font-size: 0.74rem;
-          letter-spacing: 0.16em;
+        .rail-panel {
+          padding: 16px;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          background: #ffffff;
+        }
+
+        .rail-label {
+          display: block;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 10px;
+          font-weight: 500;
           text-transform: uppercase;
-          color: #5b6472;
+          letter-spacing: 0.08em;
+          color: #94a3b8;
+          margin-bottom: 4px;
         }
 
-        .subtle,
-        .summary,
-        .criterion-top p,
-        .checktext p,
-        .invite-summary p {
-          margin: 0;
-          color: #5b6472;
-          line-height: 1.55;
+        .rail-panel strong {
+          font-size: 14px;
         }
+
+        /* ---- Layout ---- */
+        .content { min-width: 0; }
 
         .panel {
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          background: #ffffff;
           padding: 24px;
         }
 
-        .content {
-          min-width: 0;
+        .eyebrow {
+          margin: 0 0 4px;
+          color: #2563eb;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
         }
 
-        .judge-layout,
-        .builder-layout {
-          display: grid;
-          gap: 20px;
+        h2 {
+          margin: 0;
+          font-family: "Plus Jakarta Sans", sans-serif;
+          font-size: 20px;
+          font-weight: 700;
+          color: #0f172a;
+          letter-spacing: -0.02em;
         }
 
-        .judge-layout {
-          grid-template-columns: minmax(260px, 0.92fr) minmax(0, 1.08fr);
-        }
-
-        .builder-layout {
-          grid-template-columns: minmax(0, 1.1fr) 380px;
+        .section-head {
+          display: flex;
+          justify-content: space-between;
           align-items: start;
+          gap: 12px;
+          margin-bottom: 16px;
+        }
+
+        .badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 4px;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 11px;
+          font-weight: 500;
+          background: #f1f5f9;
+          color: #475569;
+          border: 1px solid #e2e8f0;
+          white-space: nowrap;
+        }
+
+        /* ---- Judge layout ---- */
+        .judge-layout {
+          display: grid;
+          grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+          gap: 20px;
         }
 
         .project-list,
@@ -652,262 +684,411 @@ export default function ParticipantWorkspace({
         .checklist,
         .status-grid {
           display: grid;
-          gap: 14px;
-        }
-
-        .detail-grid {
-          grid-template-columns: minmax(0, 1fr);
-        }
-
-        .project-card,
-        .criterion,
-        .checklist-item,
-        .status-card,
-        .invite-summary {
-          border: 1px solid #d7dee7;
-          border-radius: 18px;
-          background: #ffffff;
-        }
-
-        .project-card,
-        .checklist-item {
-          width: 100%;
-          text-align: left;
-          padding: 18px;
-          cursor: pointer;
-          transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
-          color: inherit;
-        }
-
-        .project-card:hover,
-        .checklist-item:hover {
-          border-color: #b9c7d8;
-          box-shadow: 0 12px 28px rgba(17, 24, 39, 0.06);
-          transform: translateY(-1px);
-        }
-
-        .project-card.active {
-          border-color: #1f4ed8;
-          box-shadow: 0 0 0 1px rgba(31, 78, 216, 0.14);
-        }
-
-        .project-card-top,
-        .section-head,
-        .criterion-top,
-        .project-meta,
-        .total-banner,
-        .checklist-item,
-        .status-grid,
-        .invite-form,
-        .project-card {
-          display: flex;
           gap: 12px;
         }
 
-        .project-card-top,
-        .section-head,
-        .criterion-top,
-        .total-banner {
+        .project-card {
+          width: 100%;
+          text-align: left;
+          padding: 16px;
+          cursor: pointer;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          background: #ffffff;
+          color: inherit;
+          transition: border-color 140ms ease, box-shadow 140ms ease;
+        }
+
+        .project-card:hover {
+          border-color: #cbd5e1;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        .project-card.active {
+          border-color: #2563eb;
+          box-shadow: 0 0 0 1px #2563eb;
+        }
+
+        .project-card-top {
+          display: flex;
           justify-content: space-between;
           align-items: start;
+          gap: 12px;
         }
 
-        .project-card p,
-        .checktext p {
-          margin-top: 6px;
+        .project-card-top strong {
+          font-size: 15px;
+          display: block;
         }
 
-        .project-meta {
+        .card-team {
+          margin: 2px 0 0;
+          font-size: 13px;
+          color: #64748b;
+        }
+
+        .score-pill {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 18px;
+          font-weight: 600;
+          color: #2563eb;
+          flex-shrink: 0;
+        }
+
+        .card-summary {
+          margin: 10px 0;
+          font-size: 13px;
+          color: #64748b;
+          line-height: 1.5;
+        }
+
+        .card-footer {
+          display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-top: 14px;
-          font-size: 0.88rem;
-          color: #5b6472;
         }
 
-        .badge,
+        .card-stage {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 11px;
+          color: #94a3b8;
+        }
+
+        /* ---- Detail panel ---- */
+        .detail-desc {
+          margin: 0 0 16px;
+          font-size: 14px;
+          color: #475569;
+          line-height: 1.6;
+        }
+
+        .detail-chips {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 16px;
+        }
+
         .chip {
           display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 999px;
-          padding: 7px 12px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          background: #eef1f4;
-          color: #111827;
+          padding: 4px 10px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 500;
+          background: #f1f5f9;
+          color: #475569;
+          border: 1px solid #e2e8f0;
         }
 
-        .subtle-badge,
-        .weight-chip,
-        .muted {
-          background: #f3f5f8;
-          color: #5b6472;
+        .chip-muted {
+          color: #94a3b8;
         }
 
         .total-banner {
-          margin-top: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
           padding: 16px;
-          border-radius: 18px;
-          background: linear-gradient(135deg, rgba(31, 78, 216, 0.08), rgba(15, 118, 110, 0.06));
-          border: 1px solid rgba(31, 78, 216, 0.12);
+          border-radius: 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
         }
 
-        .total-banner strong {
+        .total-label {
           display: block;
-          margin-top: 4px;
-          font-family: "Instrument Serif", Georgia, serif;
-          font-size: 2rem;
+          font-family: "JetBrains Mono", monospace;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #64748b;
+          margin-bottom: 4px;
         }
 
-        .criteria-list {
-          margin-top: 6px;
+        .total-value {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 32px;
+          font-weight: 600;
+          color: #0f172a;
         }
 
+        .total-max {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 14px;
+          color: #94a3b8;
+        }
+
+        /* ---- Scoring panel ---- */
         .criterion {
           padding: 16px;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          background: #ffffff;
+        }
+
+        .criterion-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        }
+
+        .criterion-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .criterion-info strong {
+          font-size: 14px;
+        }
+
+        .criterion-weight {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 11px;
+          color: #94a3b8;
+        }
+
+        .criterion-value {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 22px;
+          font-weight: 600;
+          color: #2563eb;
+        }
+
+        .criterion-helper {
+          margin: 0 0 12px;
+          font-size: 13px;
+          color: #64748b;
+          line-height: 1.4;
         }
 
         .slider-row {
           display: grid;
-          grid-template-columns: 20px minmax(0, 1fr) auto;
+          grid-template-columns: 20px minmax(0, 1fr) 20px;
           gap: 10px;
           align-items: center;
-          margin-top: 14px;
+        }
+
+        .slider-min,
+        .slider-max {
+          font-family: "JetBrains Mono", monospace;
+          font-size: 11px;
+          color: #94a3b8;
+          text-align: center;
         }
 
         .slider-row input[type="range"] {
           width: 100%;
           appearance: none;
-          height: 10px;
+          height: 6px;
+          border: none;
+          padding: 0;
           border-radius: 999px;
           outline: none;
           background: linear-gradient(
             90deg,
-            #1f4ed8 0 var(--fill),
-            #e5ebf1 var(--fill) 100%
+            #2563eb 0 var(--fill),
+            #e2e8f0 var(--fill) 100%
           );
         }
 
         .slider-row input[type="range"]::-webkit-slider-thumb {
           appearance: none;
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
           background: #ffffff;
-          border: 2px solid #1f4ed8;
-          box-shadow: 0 4px 10px rgba(17, 24, 39, 0.12);
+          border: 2px solid #2563eb;
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+          cursor: pointer;
         }
 
-        .comment-field {
-          display: grid;
-          gap: 8px;
-          margin-top: 18px;
+        .slider-row input[type="range"]::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #ffffff;
+          border: 2px solid #2563eb;
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+          cursor: pointer;
+        }
+
+        .score-label-text {
+          display: block;
+          font-size: 12px;
+          font-weight: 500;
+          color: #2563eb;
+          margin-top: 6px;
+          text-align: center;
         }
 
         .criterion-comment {
           display: grid;
-          gap: 8px;
-          margin-top: 14px;
+          gap: 4px;
+          margin-top: 12px;
         }
 
         .criterion-comment textarea {
-          min-height: 72px;
+          min-height: 56px;
+        }
+
+        .comment-field {
+          display: grid;
+          gap: 6px;
+          margin-top: 16px;
+        }
+
+        .comment-field span {
+          font-size: 13px;
+          font-weight: 500;
         }
 
         textarea,
         input,
         select {
           width: 100%;
-          border: 1px solid #d7dee7;
-          border-radius: 14px;
-          padding: 12px 14px;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 10px 14px;
           background: #ffffff;
-          color: #111827;
+          color: #0f172a;
           font: inherit;
+          font-size: 14px;
         }
 
         textarea:focus,
         input:focus,
         select:focus {
-          outline: 2px solid rgba(31, 78, 216, 0.16);
-          border-color: #1f4ed8;
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .invite-form {
-          flex-direction: column;
-          margin-top: 6px;
-        }
-
-        .invite-form label,
-        .comment-field {
+        /* ---- Builder layout ---- */
+        .builder-layout {
           display: grid;
-          gap: 8px;
+          grid-template-columns: minmax(0, 1.1fr) 360px;
+          gap: 20px;
+          align-items: start;
         }
 
-        .primary-button {
-          border: 0;
-          border-radius: 999px;
-          padding: 12px 16px;
-          background: #1f4ed8;
-          color: white;
-          font-weight: 600;
-          cursor: pointer;
-          transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-
-        .primary-button:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 10px 24px rgba(31, 78, 216, 0.18);
-        }
-
-        .checklist {
-          margin-top: 6px;
-        }
+        .checklist { margin-top: 4px; }
 
         .checklist-item {
+          width: 100%;
+          display: flex;
           align-items: center;
+          gap: 12px;
           text-align: left;
+          padding: 14px;
+          cursor: pointer;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          background: #ffffff;
+          color: inherit;
+          transition: border-color 140ms ease;
+        }
+
+        .checklist-item:hover {
+          border-color: #cbd5e1;
         }
 
         .checklist-item.done {
-          border-color: rgba(21, 128, 61, 0.4);
-          background: linear-gradient(135deg, rgba(21, 128, 61, 0.06), #ffffff);
+          border-color: #bbf7d0;
+          background: #f0fdf4;
         }
 
         .checkmark {
-          width: 28px;
-          height: 28px;
-          border-radius: 999px;
+          width: 24px;
+          height: 24px;
+          border-radius: 6px;
           display: grid;
           place-items: center;
           flex: 0 0 auto;
-          background: #eef1f4;
-          color: #15803d;
+          background: #f1f5f9;
+          color: #16a34a;
+          font-size: 13px;
           font-weight: 700;
         }
 
         .checklist-item.done .checkmark {
-          background: rgba(21, 128, 61, 0.12);
+          background: #dcfce7;
         }
 
         .checktext strong {
           display: block;
+          font-size: 14px;
+        }
+
+        .checktext p {
+          margin: 4px 0 0;
+          font-size: 13px;
+          color: #64748b;
         }
 
         .status-grid {
           margin-top: 16px;
+          grid-template-columns: 1fr 1fr;
         }
 
-        .status-card,
+        .status-card {
+          padding: 14px;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+        }
+
+        .status-card strong {
+          display: block;
+          font-size: 14px;
+        }
+
+        .invite-form {
+          display: grid;
+          gap: 12px;
+          margin-top: 4px;
+        }
+
+        .invite-form label {
+          display: grid;
+          gap: 4px;
+        }
+
+        .invite-form label span {
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .primary-btn {
+          border: 0;
+          border-radius: 8px;
+          padding: 10px 16px;
+          background: #0f172a;
+          color: white;
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 140ms ease;
+        }
+
+        .primary-btn:hover {
+          background: #1e293b;
+        }
+
         .invite-summary {
-          padding: 16px;
+          margin-top: 16px;
+          padding: 14px;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          background: #f8fafc;
         }
 
-        .invite-summary {
-          margin-top: 18px;
+        .invite-summary p {
+          margin: 4px 0 0;
+          font-size: 13px;
+          color: #475569;
         }
 
+        /* ---- Responsive ---- */
         @media (max-width: 1080px) {
           .shell,
           .judge-layout,
@@ -917,29 +1098,48 @@ export default function ParticipantWorkspace({
 
           .rail {
             position: static;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           }
         }
 
         @media (max-width: 720px) {
-          .workspace {
-            padding: 16px;
-          }
+          .workspace { padding: 12px; }
 
-          .panel,
-          .rail {
-            padding: 18px;
-          }
+          .panel { padding: 16px; }
 
-          .project-card-top,
-          .section-head,
-          .criterion-top,
-          .total-banner,
-          .status-grid {
+          .section-head {
             flex-direction: column;
           }
 
+          .status-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .total-banner {
+            flex-direction: column;
+            gap: 4px;
+          }
+
+          .slider-row input[type="range"]::-webkit-slider-thumb {
+            width: 28px;
+            height: 28px;
+          }
+
+          .slider-row input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+          }
+
+          .criterion {
+            padding: 20px;
+          }
+
           .slider-row {
-            grid-template-columns: 20px minmax(0, 1fr);
+            gap: 14px;
+          }
+
+          .criterion-value {
+            font-size: 28px;
           }
         }
       `}</style>

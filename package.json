@@ -2,16 +2,32 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:stack": "./scripts/dev.sh",
+    "postinstall": "prisma generate",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "db:generate": "./scripts/with-env.sh prisma generate",
+    "db:migrate": "./scripts/with-env.sh prisma migrate dev",
+    "db:deploy": "./scripts/with-env.sh prisma migrate deploy",
+    "db:seed": "./scripts/with-env.sh tsx prisma/seed.ts",
+    "test": "node --test --import tsx"
   },
   "dependencies": {
+    "@prisma/client": "^6.16.2",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "csv-parse": "^6.2.1",
     "next": "^16.2.1",
+    "prisma": "^6.16.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "typescript": "^6.0.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
